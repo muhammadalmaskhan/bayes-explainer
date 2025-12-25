@@ -1,0 +1,111 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  background: #f4f6f9;
+  color: #222;
+}
+
+.hero {
+  padding: 3rem;
+  background: linear-gradient(135deg, #e3f2fd, #ffffff);
+  text-align: center;
+}
+
+.explainer {
+  max-width: 1000px;
+  margin: auto;
+  padding: 2rem;
+}
+
+/* Cards */
+.card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.card-text h2 {
+  margin-top: 0;
+}
+
+.card-viz {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Themes */
+.data-card {
+  background: linear-gradient(180deg, #eef5ff, #ffffff);
+}
+
+.prior-card {
+  background: linear-gradient(180deg, #fff4d6, #ffffff);
+}
+
+.likelihood-card {
+  background: linear-gradient(180deg, #e9f7ef, #ffffff);
+}
+
+.posterior-card {
+  background: linear-gradient(180deg, #fff0e6, #ffffff);
+}
+
+/* Coins */
+.coin-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.coin {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coin.heads {
+  background: #4caf50;
+  color: white;
+}
+
+.coin.tails {
+  background: #f44336;
+  color: white;
+}
+
+/* Canvas appearance */
+canvas {
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+}
+.overlay-card {
+  background: linear-gradient(180deg, #eef7f1, #ffffff);
+}
+.legend {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.legend .prior { color: #3f51b5; }
+.legend .likelihood { color: #e91e63; }
+.legend .posterior { color: #009688; }

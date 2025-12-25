@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bayesian Inference Explainer</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+
+<body>
+
+<header class="hero">
+  <h1>Bayesian Inference</h1>
+  <p>Understanding uncertainty through a coin toss</p>
+</header>
+
+<main class="explainer">
+
+  <!-- Observed Data -->
+  <section class="card data-card">
+    <div class="card-text">
+      <h2>Observed Data</h2>
+      <p>
+        We start with actual observations. These coin tosses are the only
+        information we have from the real world.
+      </p>
+
+      <label>
+        Number of tosses:
+        <input type="range" id="numTosses" min="1" max="20" value="10">
+        <span id="numTossesValue">10</span>
+      </label>
+
+      <button id="regenerate">Regenerate Data</button>
+
+      <p>
+        Heads: <span id="headsCount">0</span> |
+        Tails: <span id="tailsCount">0</span>
+      </p>
+    </div>
+
+    <div class="card-viz">
+      <div id="coinContainer" class="coin-container"></div>
+    </div>
+  </section>
+
+  <!-- Prior -->
+  <section class="card prior-card">
+    <div class="card-text">
+      <h2>Prior Belief</h2>
+      <p>
+        Before seeing any data, we express our belief about the probability
+        of heads using a probability distribution.
+      </p>
+
+      <label>
+        α:
+        <input type="range" id="alpha" min="0.5" max="5" step="0.5" value="1">
+        <span id="alphaVal">1</span>
+      </label>
+
+      <label>
+        β:
+        <input type="range" id="beta" min="0.5" max="5" step="0.5" value="1">
+        <span id="betaVal">1</span>
+      </label>
+    </div>
+
+    <div class="card-viz">
+      <!-- IMPORTANT: width & height -->
+      <canvas id="priorCanvas" width="600" height="260"></canvas>
+    </div>
+  </section>
+
+  <!-- Likelihood -->
+  <section class="card likelihood-card">
+    <div class="card-text">
+      <h2>Likelihood</h2>
+      <p>
+        The likelihood tells us how compatible different values of the
+        probability of heads are with the observed data.
+      </p>
+    </div>
+
+    <div class="card-viz">
+      <canvas id="likelihoodCanvas" width="600" height="260"></canvas>
+    </div>
+  </section>
+
+  <!-- Posterior -->
+  <section class="card posterior-card">
+    <div class="card-text">
+      <h2>Posterior (Updated Belief)</h2>
+      <p>
+        The posterior combines the prior belief and the likelihood to form
+        an updated belief after seeing the data.
+      </p>
+    </div>
+
+    <div class="card-viz">
+      <canvas id="posteriorCanvas" width="600" height="260"></canvas>
+    </div>
+  </section>
+<!-- Overlay: Bayesian Update -->
+<section class="card overlay-card">
+  <div class="card-text">
+    <h2>How Prior and Data Combine</h2>
+    <p>
+      This panel shows how the prior belief (blue) and the likelihood from
+      observed data (pink) combine to form the posterior belief (green).
+    </p>
+  </div>
+
+  <div class="card-viz">
+    <canvas id="overlayCanvas" width="600" height="260"></canvas>
+  </div>
+</section>
+
+</main>
+
+<script src="styles/scripts/app.js"></script>
+</body>
+</html>
