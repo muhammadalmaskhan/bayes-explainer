@@ -357,6 +357,28 @@ const mapP =
       Math.floor(samplesP.length / 2)
     ];
 
+
+// ===== Draw MAP line =====
+octx.setLineDash([6, 4]);
+octx.beginPath();
+octx.moveTo(mapP * overlayCanvas.width, 0);
+octx.lineTo(mapP * overlayCanvas.width, overlayCanvas.height);
+octx.strokeStyle = "#333";
+octx.lineWidth = 2;
+octx.stroke();
+octx.setLineDash([]);
+
+// ===== Draw Mean line =====
+octx.beginPath();
+octx.moveTo(meanP * overlayCanvas.width, 0);
+octx.lineTo(meanP * overlayCanvas.width, overlayCanvas.height);
+octx.strokeStyle = "#ff9800";
+octx.lineWidth = 2;
+octx.stroke();
+
+
+
+
   if (hdi) {
   const xLow = hdi.low * overlayCanvas.width;
   const xHigh = hdi.high * overlayCanvas.width;
