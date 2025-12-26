@@ -18,19 +18,23 @@ const resampleBtn = document.getElementById("resampleBtn");
 
 const samplingEnabled =
   nSamplesSlider && nSamplesVal && resampleBtn;
+// Animation state
+let lastPosterior = [];
+
+let animationFrame = null;
+let animatedSamples = [];
 
 
 if (samplingEnabled) {
-  // Update dots when slider changes
-  nSamplesSlider.addEventListener("input", () => {
-    nSamplesVal.textContent = nSamplesSlider.value;
-    drawOverlay();
-  });
+nSamplesSlider.addEventListener("input", () => {
+  nSamplesVal.textContent = nSamplesSlider.value;
+  startSamplingAnimation(lastPosterior);
+});
 
-  // Resample button
-  resampleBtn.addEventListener("click", () => {
-    drawOverlay();
-  });
+resampleBtn.addEventListener("click", () => {
+  startSamplingAnimation(lastPosterior);
+});
+
 }
 
 
@@ -100,6 +104,33 @@ function normalizeToSum(arr) {
   const s = arr.reduce((a, b) => a + b, 0) || 1;
   return arr.map(v => v / s);
 }
+
+function startSamplingAnimation(post) {
+  // cancel previous animation
+  if (animationFrame) {
+    cancelAnimationFrame(animationFrame);
+  }
+
+  animatedSamples = [];
+  const pmf = normalizeToSum(post);
+  const target = +nSamplesSlider.value;
+
+  function step() {
+    // add a small batch each frame
+    for (let i = 0; i < 10 && animatedSamples.length < target; i++) {
+      animatedSamples.push(sampleIndexFromPMF(pmf));
+    }
+
+    drawOverlay(true);
+
+    if (animatedSamples.length < target) {
+      animationFrame = requestAnimationFrame(step);
+    }
+  }
+
+  step();
+}
+
 
 // Sample index from a discrete PMF
 function sampleIndexFromPMF(pmf) {
@@ -219,7 +250,7 @@ function sampleIndexFromPMF(pmf) {
 }
 
 
-  function drawOverlay() {
+  function drawOverlay(isAnimating = false) {
     octx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
     const heads = data.reduce((a, b) => a + b, 0);
@@ -235,6 +266,8 @@ function sampleIndexFromPMF(pmf) {
       prior.push(pr);
       like.push(lk);
       post.push(pr * lk);
+      lastPosterior = post;
+
     }
 
     const maxY = Math.max(...post);
@@ -299,29 +332,24 @@ octx.globalAlpha = 1;
 
 
   // ===== Posterior sampling dots =====
-  if (samplingEnabled) {
-    const n = +nSamplesSlider.value;
-    nSamplesVal.textContent = n;
+// ===== Animated posterior sampling dots =====
+if (samplingEnabled) {
+  const bandTop = overlayCanvas.height * 0.78;
+  const bandBottom = overlayCanvas.height * 0.95;
 
-    const pmf = normalizeToSum(post);
+  octx.globalAlpha = 0.8;
+  animatedSamples.forEach(idx => {
+    const p = idx / 200;
+    const x = p * overlayCanvas.width;
+    const y = bandTop + Math.random() * (bandBottom - bandTop);
 
-    const bandTop = overlayCanvas.height * 0.78;
-    const bandBottom = overlayCanvas.height * 0.95;
-
-    octx.globalAlpha = 0.8;
-    for (let k = 0; k < n; k++) {
-      const idx = sampleIndexFromPMF(pmf);
-      const p = idx / 200;
-      const x = p * overlayCanvas.width;
-      const y = bandTop + Math.random() * (bandBottom - bandTop);
-
-      octx.beginPath();
-      octx.arc(x, y, 2.2, 0, Math.PI * 2);
-      octx.fillStyle = "#009688";
-      octx.fill();
-    }
-    octx.globalAlpha = 1;
-  }
+    octx.beginPath();
+    octx.arc(x, y, 2.2, 0, Math.PI * 2);
+    octx.fillStyle = "#009688";
+    octx.fill();
+  });
+  octx.globalAlpha = 1;
+}
 
 
 
