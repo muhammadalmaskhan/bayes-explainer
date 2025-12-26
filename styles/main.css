@@ -109,3 +109,15 @@ canvas {
 .legend .prior { color: #3f51b5; }
 .legend .likelihood { color: #e91e63; }
 .legend .posterior { color: #009688; }
+.controls {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.controls label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}

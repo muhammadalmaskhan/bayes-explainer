@@ -101,19 +101,28 @@
     </div>
   </section>
 <!-- Overlay: Bayesian Update -->
-<section class="card overlay-card">
-  <div class="card-text">
-    <h2>How Prior and Data Combine</h2>
-    <p>
-      This panel shows how the prior belief (blue) and the likelihood from
-      observed data (pink) combine to form the posterior belief (green).
-    </p>
-  </div>
+<section id="overlay">
+  <h2>How Prior and Data Combine</h2>
 
-  <div class="card-viz">
-    <canvas id="overlayCanvas" width="600" height="260"></canvas>
+  <p>
+    The posterior combines the prior belief with observed data.
+    Sampling from the posterior gives many plausible values of <em>p</em>.
+  </p>
+
+  <canvas id="overlayCanvas" width="600" height="300"></canvas>
+
+  <!-- Sampling controls -->
+  <div class="controls">
+    <label>
+      Samples:
+      <input type="range" id="nSamples" min="50" max="1000" step="50" value="300">
+      <span id="nSamplesVal">300</span>
+    </label>
+
+    <button id="resampleBtn">Resample</button>
   </div>
 </section>
+
 
 </main>
 

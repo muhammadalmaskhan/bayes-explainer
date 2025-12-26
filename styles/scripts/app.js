@@ -8,7 +8,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const headsLabel = document.getElementById("headsCount");
   const tailsLabel = document.getElementById("tailsCount");
 
+
+
+
+  // Sampling controls (overlay)
+const nSamplesSlider = document.getElementById("nSamples");
+const nSamplesVal = document.getElementById("nSamplesVal");
+const resampleBtn = document.getElementById("resampleBtn");
+
   let data = [];
+  nSamplesSlider.addEventListener("input", () => {
+  nSamplesVal.textContent = nSamplesSlider.value;
+  drawOverlay();
+});
+
+resampleBtn.addEventListener("click", () => {
+  drawOverlay();
+});
+
 
   function generateData(n) {
     data = Array.from({ length: n }, () => Math.random() < 0.5 ? 1 : 0);
@@ -142,6 +159,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const overlayCanvas = document.getElementById("overlayCanvas");
   const octx = overlayCanvas.getContext("2d");
 
+
+  function normalizeToSum(arr) {
+  const s = arr.reduce((a, b) => a + b, 0) || 1;
+  return arr.map(v => v / s);
+}
+
+function sampleIndexFromPMF(pmf) {
+  const r = Math.random();
+  let c = 0;
+  for (let i = 0; i < pmf.length; i++) {
+    c += pmf[i];
+    if (r <= c) return i;
+  }
+  return pmf.length - 1;
+}
+
+
   function drawOverlay() {
     octx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
@@ -190,6 +224,32 @@ document.addEventListener("DOMContentLoaded", () => {
     octx.strokeStyle = "#333";
     octx.stroke();
     octx.setLineDash([]);
+
+
+
+    // ---- posterior sampling dots ----
+const n = +nSamplesSlider.value;
+nSamplesVal.textContent = n;
+
+const pmf = normalizeToSum(post);
+
+const bandTop = overlayCanvas.height * 0.78;
+const bandBottom = overlayCanvas.height * 0.95;
+
+octx.globalAlpha = 0.8;
+for (let k = 0; k < n; k++) {
+  const idx = sampleIndexFromPMF(pmf);
+  const p = idx / 200;
+  const x = p * overlayCanvas.width;
+  const y = bandTop + Math.random() * (bandBottom - bandTop);
+
+  octx.beginPath();
+  octx.arc(x, y, 2.2, 0, Math.PI * 2);
+  octx.fillStyle = "#009688";
+  octx.fill();
+}
+octx.globalAlpha = 1;
+
   }
 
   /* ========= INIT ========= */
