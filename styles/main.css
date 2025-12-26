@@ -158,3 +158,9 @@ canvas {
   border: 1px solid #ddd;
   background: #fafafa;
 }
+.hdi-text {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #00695c;
+  font-weight: 500;
+}

@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const regenerateBtn = document.getElementById("regenerate");
   const headsLabel = document.getElementById("headsCount");
   const tailsLabel = document.getElementById("tailsCount");
+  const hdiText = document.getElementById("hdiText");
+
 
 
 
@@ -145,6 +147,42 @@ function sampleIndexFromPMF(pmf) {
 }
 
 
+
+/* ===== HDI helper ===== */
+// Compute HDI from samples (simple sliding window)
+function computeHDI(samples, mass = 0.94) {
+  if (samples.length === 0) return null;
+
+  const sorted = samples
+    .map(i => i / 200) // convert index → p
+    .slice()
+    .sort((a, b) => a - b);
+
+  const n = sorted.length;
+  const windowSize = Math.floor(mass * n);
+  let bestStart = 0;
+  let minWidth = Infinity;
+
+  for (let i = 0; i + windowSize < n; i++) {
+    const width = sorted[i + windowSize] - sorted[i];
+    if (width < minWidth) {
+      minWidth = width;
+      bestStart = i;
+    }
+  }
+
+  return {
+    low: sorted[bestStart],
+    high: sorted[bestStart + windowSize]
+  };
+}
+
+
+
+
+
+
+
   function drawPrior() {
     priorCtx.clearRect(0, 0, priorCanvas.width, priorCanvas.height);
     const a = +alphaSlider.value;
@@ -266,6 +304,9 @@ function sampleIndexFromPMF(pmf) {
     const b = +betaSlider.value;
 
     const prior = [], like = [], post = [];
+
+
+    
     for (let i = 0; i <= 200; i++) {
       const p = i / 200;
       const pr = betaShape(p, a, b);
@@ -296,6 +337,51 @@ function sampleIndexFromPMF(pmf) {
     draw(prior, "#3f51b5", 2, 0.4);
     draw(like, "#e91e63", 2, 0.4);
     draw(post, "#009688", 3, 1);
+
+    // ===== HDI shading (94%) =====
+if (samplingEnabled && animatedSamples.length > 10) {
+  const hdi = computeHDI(animatedSamples, 0.94);
+
+
+
+  // ===== Posterior mean & MAP (from samples) =====
+const samplesP = animatedSamples.map(i => i / 200);
+
+const meanP =
+  samplesP.reduce((a, b) => a + b, 0) / samplesP.length;
+
+const mapP =
+  samplesP
+    .slice()
+    .sort((a, b) => a - b)[
+      Math.floor(samplesP.length / 2)
+    ];
+
+  if (hdi) {
+  const xLow = hdi.low * overlayCanvas.width;
+  const xHigh = hdi.high * overlayCanvas.width;
+
+  octx.fillStyle = "rgba(0, 150, 136, 0.15)";
+  octx.fillRect(
+    xLow,
+    0,
+    xHigh - xLow,
+    overlayCanvas.height
+  );
+
+  // 👇 PUT SAFE TEXT CODE HERE
+  if (hdiText) {
+    hdiText.textContent =
+      "94% HDI: [" +
+      hdi.low.toFixed(2) +
+      ", " +
+      hdi.high.toFixed(2) +
+      "]";
+  }
+}
+
+}
+
 
     // MAP line
     const mapIndex = post.indexOf(Math.max(...post));
