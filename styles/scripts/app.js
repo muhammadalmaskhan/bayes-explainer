@@ -11,10 +11,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-  // Sampling controls (overlay)
+/* ===== Sampling controls (safe lookup) ===== */
 const nSamplesSlider = document.getElementById("nSamples");
 const nSamplesVal = document.getElementById("nSamplesVal");
 const resampleBtn = document.getElementById("resampleBtn");
+
+const samplingEnabled =
+  nSamplesSlider && nSamplesVal && resampleBtn;
+
+
+if (samplingEnabled) {
+  // Update dots when slider changes
+  nSamplesSlider.addEventListener("input", () => {
+    nSamplesVal.textContent = nSamplesSlider.value;
+    drawOverlay();
+  });
+
+  // Resample button
+  resampleBtn.addEventListener("click", () => {
+    drawOverlay();
+  });
+}
+
+
+if (samplingEnabled) {
+  nSamplesVal.textContent = nSamplesSlider.value;
+}
+
 
   let data = [];
   nSamplesSlider.addEventListener("input", () => {
@@ -69,6 +92,26 @@ resampleBtn.addEventListener("click", () => {
   function betaShape(x, a, b) {
     return Math.pow(x, a - 1) * Math.pow(1 - x, b - 1);
   }
+
+  /* ===== Sampling helpers ===== */
+
+// Normalize array so sum = 1 (PMF)
+function normalizeToSum(arr) {
+  const s = arr.reduce((a, b) => a + b, 0) || 1;
+  return arr.map(v => v / s);
+}
+
+// Sample index from a discrete PMF
+function sampleIndexFromPMF(pmf) {
+  const r = Math.random();
+  let c = 0;
+  for (let i = 0; i < pmf.length; i++) {
+    c += pmf[i];
+    if (r <= c) return i;
+  }
+  return pmf.length - 1;
+}
+
 
   function drawPrior() {
     priorCtx.clearRect(0, 0, priorCanvas.width, priorCanvas.height);
@@ -227,6 +270,9 @@ function sampleIndexFromPMF(pmf) {
 
 
 
+
+
+
     // ---- posterior sampling dots ----
 const n = +nSamplesSlider.value;
 nSamplesVal.textContent = n;
@@ -250,7 +296,39 @@ for (let k = 0; k < n; k++) {
 }
 octx.globalAlpha = 1;
 
+
+
+  // ===== Posterior sampling dots =====
+  if (samplingEnabled) {
+    const n = +nSamplesSlider.value;
+    nSamplesVal.textContent = n;
+
+    const pmf = normalizeToSum(post);
+
+    const bandTop = overlayCanvas.height * 0.78;
+    const bandBottom = overlayCanvas.height * 0.95;
+
+    octx.globalAlpha = 0.8;
+    for (let k = 0; k < n; k++) {
+      const idx = sampleIndexFromPMF(pmf);
+      const p = idx / 200;
+      const x = p * overlayCanvas.width;
+      const y = bandTop + Math.random() * (bandBottom - bandTop);
+
+      octx.beginPath();
+      octx.arc(x, y, 2.2, 0, Math.PI * 2);
+      octx.fillStyle = "#009688";
+      octx.fill();
+    }
+    octx.globalAlpha = 1;
   }
+
+
+
+
+
+
+}
 
   /* ========= INIT ========= */
   valueLabel.textContent = slider.value;
