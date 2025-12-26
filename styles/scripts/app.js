@@ -122,6 +122,7 @@ function startSamplingAnimation(post) {
     }
 
     drawOverlay(true);
+drawTrace();
 
     if (animatedSamples.length < target) {
       animationFrame = requestAnimationFrame(step);
@@ -233,6 +234,12 @@ function sampleIndexFromPMF(pmf) {
   const overlayCanvas = document.getElementById("overlayCanvas");
   const octx = overlayCanvas.getContext("2d");
 
+
+
+
+  /* ===================== TRACE ===================== */
+const traceCanvas = document.getElementById("traceCanvas");
+const tctx = traceCanvas.getContext("2d");
 
   function normalizeToSum(arr) {
   const s = arr.reduce((a, b) => a + b, 0) || 1;
@@ -362,4 +369,36 @@ if (samplingEnabled) {
   valueLabel.textContent = slider.value;
   generateData(+slider.value);
   drawPrior();
+
+function drawTrace() {
+  if (!samplingEnabled || animatedSamples.length === 0) return;
+
+  tctx.clearRect(0, 0, traceCanvas.width, traceCanvas.height);
+
+  const padding = 20;
+  const n = animatedSamples.length;
+
+  tctx.beginPath();
+  animatedSamples.forEach((idx, i) => {
+    const x =
+      padding +
+      (i / Math.max(1, n - 1)) * (traceCanvas.width - 2 * padding);
+
+    const p = idx / 200;
+    const y =
+      traceCanvas.height -
+      padding -
+      p * (traceCanvas.height - 2 * padding);
+
+    if (i === 0) tctx.moveTo(x, y);
+    else tctx.lineTo(x, y);
+  });
+
+  tctx.strokeStyle = "#009688";
+  tctx.lineWidth = 1.5;
+  tctx.stroke();
+}
+
+
+
 });

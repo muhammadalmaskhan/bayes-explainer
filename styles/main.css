@@ -153,3 +153,8 @@ canvas {
 .controls button:hover {
   background: #00796b;
 }
+/* ===== Trace Plot ===== */
+#trace canvas {
+  border: 1px solid #ddd;
+  background: #fafafa;
+}
