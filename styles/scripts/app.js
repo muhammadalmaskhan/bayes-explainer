@@ -507,6 +507,32 @@ function drawTrace() {
   tctx.stroke();
 }
 
+let activeStep = 1;
 
+/* ===================== SCROLL REVEAL ===================== */
+const steps = document.querySelectorAll("#scrolly section");
+
+const observer = new IntersectionObserver(
+  entries => {
+    entries.forEach(entry => {
+  if (entry.isIntersecting) {
+  const step = parseInt(entry.target.dataset.step);
+  activeStep = step;
+
+  console.log("Active step:", step);
+
+  entry.target.style.opacity = 1;
+  entry.target.style.transform = "translateY(0)";
+  entry.target.style.pointerEvents = "auto";
+}
+
+    });
+  },
+  {
+    threshold: 0.3
+  }
+);
+
+steps.forEach(step => observer.observe(step));
 
 });

@@ -164,3 +164,19 @@ canvas {
   color: #00695c;
   font-weight: 500;
 }
+/* ===================== SCROLL STORY: STEP VISIBILITY ===================== */
+
+/* Hide all steps by default */
+#scrolly section {
+  opacity: 0;
+  transform: translateY(40px);
+  pointer-events: none;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* Show first step initially */
+#scrolly section[data-step="1"] {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
