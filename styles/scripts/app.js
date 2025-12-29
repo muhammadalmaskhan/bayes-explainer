@@ -508,6 +508,7 @@ function drawTrace() {
 }
 
 let activeStep = 1;
+let samplingStarted = false;
 
 /* ===================== SCROLL REVEAL ===================== */
 const steps = document.querySelectorAll("#scrolly section");
@@ -528,9 +529,11 @@ const observer = new IntersectionObserver(
 
     });
   },
-  {
-    threshold: 0.3
-  }
+ {
+  threshold: 0.15,
+  rootMargin: "0px 0px -20% 0px"
+}
+
 );
 
 steps.forEach(step => observer.observe(step));

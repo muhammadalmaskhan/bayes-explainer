@@ -170,9 +170,10 @@ canvas {
 #scrolly section {
   opacity: 0;
   transform: translateY(40px);
-  pointer-events: none;
   transition: opacity 0.6s ease, transform 0.6s ease;
+  min-height: 80vh; /* CRITICAL */
 }
+
 
 /* Show first step initially */
 #scrolly section[data-step="1"] {
